@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battleship</title>
+</head>
+<body>
+<script>
+
+    /*carrier -5, battleship -4, destroyer-3, submarine-3, patrol boat-2*/
+    /*only can have 5 ships, placed vertical or horizontal*/
+
+     const shipFactory = (length, shipName) => {
+        const name = shipName;
+        const shipPositions = Array(length).fill("");
+        let hit = (num) => {
+            shipPositions[num] = "hit";
+            return;
+        };
+        let isSunk = () => {
+            return shipPositions.every(val=> val === "hit");
+        }
+        return {name, length, hit, isSunk, shipPositions}
+    }  
+
+
+    const gameBoard = () => {
+        let board = Array.from(Array(8), _ => Array(8).fill(""));
+        let allShips = [];
+        let missedList = [];
+
+        const findShip = (shipName) => {
+            const result = allShips.find(({name})=> name === shipName);
+            return result;
+        };
+        
+        const placeShip = (row, col, length, shipName) => {
+            let ship = shipFactory(length, shipName);
+            allShips.push(ship);
+            for (i=0; i< length; i++) {
+                board[row][col+i] = {name:shipName, index: i, hit: false };
+            }
+            return allShips;
+        };
+
+        const receiveAttack = (row, col) => {
+            if (board[row][col]=== "") {
+                missedList.push([[row],[col]]);
+                return;
+            } else {
+                let ship = findShip(board[row][col].name);
+                let index = board[row][col].index;
+                ship.hit(index);
+                board[row][col].hit = true;
+                return;
+            }
+        };
+        return {board, allShips, placeShip, receiveAttack, missedList};
+    }
+
+    //each player has their own battleboard
+    //players are the user and the computer
+    //whoever's total ships sink first loses
+    const player = () => {
+        console.log("player")
+    }
+
+    let battleboard = gameBoard();
+    battleboard.placeShip(0,2,3, "submarine");
+    battleboard.placeShip(2,2,2, "patrol");
+
+    let enemyboard = gameBoard();
+    enemyboard.placeShip(5,3,2, "patrol");
+    enemyboard.placeShip(7,3,3, "submarine");
+
+
+
+    
+    
+
+</script>
+   
+</body>
+</html>
